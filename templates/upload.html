@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Review Analyzer</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+      .card {
+        width: 40rem;
+        margin: auto;
+        transition: all 0.2s ease-in-out;
+      }
+      body {
+        background: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .navbar-brand {
+        font-size: 1.5em;
+        transition: all 0.2s ease-in-out;
+      }
+      .container {
+        flex: 1;
+      }
+      footer {
+        width: 100%;
+        height: 50px;
+        line-height: 50px;
+        background-color: #f8f9fa;
+        text-align: center;
+        transition: all 0.2s ease-in-out;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Review Analyzer</a>
+    </nav>
+
+    <div class="container">
+      <h1 class="text-center mt-5">Welcome to Review Analyzer</h1>
+      <p class="text-center">Upload your Excel file to analyze the reviews and get insights about sentiment, emotion and more.</p>
+      <div class="card mt-5">
+        <div class="card-header bg-primary text-white">
+          <h2 class="mb-0">Upload your Excel file</h2>
+        </div>
+        <div class="card-body">
+          <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+              <input type="file" name="document" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Submit</button>
+          </form>
+          <div id="progress" style="display: none;" class="mt-3">
+            <div class="alert alert-info"><div class="spinner-border text-info" role="status"></div> Processing...</div>
+          </div>
+          <div id="result" class="mt-3">
+            <!-- This is where you'll display the result Excel file and graphs -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <span>&copy; 2023 Review Analyzer</span>
+    </footer>
+
+    <script>
+      $('#upload-form').on('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $('#progress').show();
+        $.ajax({
+          url: '/upload',
+          type: 'POST',
+          data: formData,
+          success: function(data) {
+              $('#progress').hide();
+
+              // Clear previous results
+              $('#result').empty();
+
+              // Create download link for Excel file
+              var link = document.createElement('a');
+              link.href = '/download/' + data.filename;
+              link.textContent = 'Download processed file';
+              link.classList.add('btn', 'btn-success', 'btn-block');
+              document.querySelector('#result').appendChild(link);
+
+              // Create img elements for sentiment and emotion graphs
+              var sentimentImg = document.createElement('img');
+              sentimentImg.src = data.sentiment_image;
+              sentimentImg.classList.add('img-fluid', 'mt-3');
+              document.querySelector('#result').appendChild(sentimentImg);
+
+              var emotionImg = document.createElement('img');
+              emotionImg.src = data.emotion_image;
+              emotionImg.classList.add('img-fluid', 'mt-3');
+              document.querySelector('#result').appendChild(emotionImg);
+          },
+          cache: false,
+          contentType: false,
+          processData: false
+        });
+      });
+    </script>
+  </body>
+</html>

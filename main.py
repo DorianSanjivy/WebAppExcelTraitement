@@ -24,6 +24,7 @@ def upload():
    if request.method == 'POST' and 'document' in request.files and 'language' in request.form:
        filename = documents.save(request.files['document'])
        language = request.form.get('language')
+       #Language for analysis
        if language == 'en':
            new_filename, sentiment_image_path, emotion_image_path = process_file_en(os.path.join('uploads', filename))
            return jsonify({'filename': new_filename, 'sentiment_image': sentiment_image_path, 'emotion_image': emotion_image_path})
@@ -81,7 +82,7 @@ def process_file_en(filepath):
         sentiment_counts.to_frame().to_excel(writer, sheet_name='Sentiment Counts')
         emotion_counts.to_frame().to_excel(writer, sheet_name='Emotion Counts')
 
-    # Avant de sauvegarder les images, assurez-vous que le dossier 'static' existe
+    # Create the static folder if it doesn't exist
     if not os.path.exists('static'):
         os.makedirs('static')
 
@@ -158,7 +159,7 @@ def process_file_fr(filepath):
     # Generate unique id for the image
     uid = uuid.uuid4()
 
-    # Avant de sauvegarder les images, assurez-vous que le dossier 'static' existe
+    # Create the static folder if it doesn't exist
     if not os.path.exists('static'):
         os.makedirs('static')
 

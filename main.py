@@ -158,6 +158,10 @@ def process_file_fr(filepath):
     # Generate unique id for the image
     uid = uuid.uuid4()
 
+    # Avant de sauvegarder les images, assurez-vous que le dossier 'static' existe
+    if not os.path.exists('static'):
+        os.makedirs('static')
+
     # Generate the image
     plt.figure(figsize=(5, 5))
     sentiment_counts.plot(kind='pie', autopct='%1.1f%%')
